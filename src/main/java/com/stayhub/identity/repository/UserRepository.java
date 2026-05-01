@@ -1,7 +1,6 @@
 package com.stayhub.identity.repository;
 
 import com.stayhub.identity.model.User;
-
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;

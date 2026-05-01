@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(UnauthorizedException.class)
   public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
+        .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -1,8 +1,7 @@
 package com.stayhub.identity.exception;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

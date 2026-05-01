@@ -11,10 +11,9 @@ import com.stayhub.identity.exception.UnauthorizedException;
 import com.stayhub.identity.model.User;
 import com.stayhub.identity.repository.UserRepository;
 import com.stayhub.identity.service.AuthService;
+import com.stayhub.identity.service.JwtService;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.stayhub.identity.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,7 +53,10 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public LoginResponse login(LoginRequest request) throws BadRequestException {
-    User user = userRepository.findUserByEmail(request.getEmail()).orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+    User user =
+        userRepository
+            .findUserByEmail(request.getEmail())
+            .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new UnauthorizedException("Invalid credentials");
