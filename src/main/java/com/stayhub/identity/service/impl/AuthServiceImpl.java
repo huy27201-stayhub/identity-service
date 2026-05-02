@@ -15,6 +15,7 @@ import com.stayhub.identity.service.JwtService;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,12 @@ public class AuthServiceImpl implements AuthService {
             .phoneNumber(normalizedPhoneNumber)
             .build();
 
-    userRepository.save(user);
+    try {
+      userRepository.save(user);
+    } catch (DataIntegrityViolationException e) {
+      validateEmailAndPhoneUniqueness(user.getEmail(), user.getPhoneNumber());
+      throw e;
+    }
 
     return "success";
   }
@@ -55,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
   public LoginResponse login(LoginRequest request) throws BadRequestException {
     User user =
         userRepository
-            .findUserByEmail(request.getEmail())
+            .findUserByEmail(request.getEmail().trim().toLowerCase())
             .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
