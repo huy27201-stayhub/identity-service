@@ -4,13 +4,15 @@ on:
   push:
     branches: [ "main" ]
 
-jobs:
-  build:
+env:
+  AWS_REGION: ap-southeast-1
+  ECR_REPOSITORY: stayhub/identity-service
 
+jobs:
+  build-application:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
@@ -24,12 +26,38 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew build
 
-  dependency-submission:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    needs: build-application
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::251294204914:role/github-actions-ecr-push-role
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build, tag, and push Docker image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $REGISTRY/$ECR_REPOSITORY:latest
+          docker push $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$ECR_REPOSITORY:latest
 
+  dependency-submission:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
