@@ -47,31 +47,14 @@ public class AuthServiceImpl implements AuthService {
             .phoneNumber(normalizedPhoneNumber)
             .build();
 
-    handleSaveUser(user);
-
-    return "success";
-  }
-
-  private void handleSaveUser(User user) {
     try {
       userRepository.save(user);
     } catch (DataIntegrityViolationException e) {
-      Map<String, String> errors = new HashMap<>();
-
-      if (userRepository.existsByEmail(user.getEmail())) {
-        errors.put("email", "Email is already taken");
-      }
-
-      if (userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
-        errors.put("phoneNumber", "Phone number is already taken");
-      }
-
-      if (!errors.isEmpty()) {
-        throw new BadRequestException("Validation failed", errors);
-      }
-
+      validateEmailAndPhoneUniqueness(user.getEmail(), user.getPhoneNumber());
       throw e;
     }
+
+    return "success";
   }
 
   @Override
