@@ -56,16 +56,21 @@ public class AuthServiceImpl implements AuthService {
     try {
       userRepository.save(user);
     } catch (DataIntegrityViolationException e) {
-      String message = e.getMostSpecificCause().getMessage();
       Map<String, String> errors = new HashMap<>();
 
-      if (message.contains("email")) {
+      if (userRepository.existsByEmail(user.getEmail())) {
         errors.put("email", "Email is already taken");
-      } else if (message.contains("phone_number")) {
+      }
+
+      if (userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
         errors.put("phoneNumber", "Phone number is already taken");
       }
 
-      throw new BadRequestException("Validation failed", errors);
+      if (!errors.isEmpty()) {
+        throw new BadRequestException("Validation failed", errors);
+      }
+
+      throw e;
     }
   }
 
