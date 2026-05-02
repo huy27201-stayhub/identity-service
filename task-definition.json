@@ -6,7 +6,7 @@
   "memory": "1024",
   "containerDefinitions": [
     {
-      "name": "my-container",
+      "name": "identity-service",
       "image": "REPLACE_IMAGE",
       "essential": true,
       "portMappings": [
