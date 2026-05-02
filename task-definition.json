@@ -2,8 +2,8 @@
   "family": "identity-service",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
-  "cpu": "0.5 vCPU",
-  "memory": "1 GB",
+  "cpu": "512",
+  "memory": "1024",
   "containerDefinitions": [
     {
       "name": "my-container",
