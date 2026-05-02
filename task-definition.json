@@ -1,0 +1,21 @@
+{
+  "family": "identity-service",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "0.5 vCPU",
+  "memory": "1 GB",
+  "containerDefinitions": [
+    {
+      "name": "my-container",
+      "image": "REPLACE_IMAGE",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ],
+  "executionRoleArn": "arn:aws:iam::251294204914:role/ecsTaskExecutionRole"
+}
