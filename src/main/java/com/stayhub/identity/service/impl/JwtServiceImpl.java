@@ -1,5 +1,6 @@
 package com.stayhub.identity.service.impl;
 
+import com.stayhub.identity.enums.Role;
 import com.stayhub.identity.service.JwtService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -19,8 +20,9 @@ public class JwtServiceImpl implements JwtService {
   @Value("${jwt.expiration}")
   private long expiration;
 
-  public String generateToken(String email) {
+  public String generateToken(String email, Role role) {
     Map<String, Object> claims = new HashMap<>();
+    claims.put("role", role);
     return createToken(claims, email);
   }
 

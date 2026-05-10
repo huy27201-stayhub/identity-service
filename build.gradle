@@ -28,7 +28,7 @@ dependencies {
     implementation 'com.googlecode.libphonenumber:libphonenumber:9.0.29'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:postgresql:42.7.11'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
     annotationProcessor 'org.projectlombok:lombok'

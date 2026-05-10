@@ -6,6 +6,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import com.stayhub.identity.dto.request.LoginRequest;
 import com.stayhub.identity.dto.request.RegisterRequest;
 import com.stayhub.identity.dto.response.LoginResponse;
+import com.stayhub.identity.enums.Role;
 import com.stayhub.identity.exception.BadRequestException;
 import com.stayhub.identity.exception.UnauthorizedException;
 import com.stayhub.identity.model.User;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
             .firstName(request.getFirstName())
             .lastName(request.getLastName())
             .phoneNumber(normalizedPhoneNumber)
+            .role(Role.GUEST)
             .build();
 
     try {
@@ -68,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    String accessToken = jwtService.generateToken(user.getEmail());
+    String accessToken = jwtService.generateToken(user.getEmail(), user.getRole());
     return LoginResponse.builder().accessToken(accessToken).build();
   }
 
