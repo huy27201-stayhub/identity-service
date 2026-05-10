@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,10 +23,10 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
   }
 
-  @ExceptionHandler(UnauthorizedException.class)
-  public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
+        .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Invalid credentials"));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

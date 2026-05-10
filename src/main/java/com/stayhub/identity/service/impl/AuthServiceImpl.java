@@ -8,7 +8,6 @@ import com.stayhub.identity.dto.request.RegisterRequest;
 import com.stayhub.identity.dto.response.LoginResponse;
 import com.stayhub.identity.enums.Role;
 import com.stayhub.identity.exception.BadRequestException;
-import com.stayhub.identity.exception.UnauthorizedException;
 import com.stayhub.identity.model.User;
 import com.stayhub.identity.repository.UserRepository;
 import com.stayhub.identity.service.AuthService;
@@ -17,6 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
 
   @Override
   public String register(RegisterRequest request) throws BadRequestException {
@@ -46,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
             .firstName(request.getFirstName())
             .lastName(request.getLastName())
             .phoneNumber(normalizedPhoneNumber)
-            .role(Role.GUEST)
+            .role(Role.ROLE_GUEST)
             .build();
 
     try {
@@ -61,16 +64,12 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public LoginResponse login(LoginRequest request) throws BadRequestException {
-    User user =
-        userRepository
-            .findUserByEmail(request.getEmail().trim().toLowerCase())
-            .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+    Authentication auth =
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getEmail().trim().toLowerCase(), request.getPassword()));
 
-    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-      throw new UnauthorizedException("Invalid credentials");
-    }
-
-    String accessToken = jwtService.generateToken(user.getEmail(), user.getRole());
+    String accessToken = jwtService.generateToken(auth);
     return LoginResponse.builder().accessToken(accessToken).build();
   }
 

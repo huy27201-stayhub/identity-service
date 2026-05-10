@@ -1,7 +1,7 @@
 package com.stayhub.identity.service;
 
-import com.stayhub.identity.enums.Role;
+import org.springframework.security.core.Authentication;
 
 public interface JwtService {
-  String generateToken(String email, Role role);
+  String generateToken(Authentication auth);
 }

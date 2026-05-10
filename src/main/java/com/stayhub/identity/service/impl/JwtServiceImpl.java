@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +22,14 @@ public class JwtServiceImpl implements JwtService {
   @Value("${jwt.expiration}")
   private long expiration;
 
-  public String generateToken(String email, Role role) {
+  public String generateToken(Authentication auth) {
+    String email = auth.getName();
+    String role =
+        auth.getAuthorities().stream()
+            .findFirst()
+            .map(GrantedAuthority::getAuthority)
+            .orElse(String.valueOf(Role.ROLE_GUEST));
+
     Map<String, Object> claims = new HashMap<>();
     claims.put("role", role);
     return createToken(claims, email);

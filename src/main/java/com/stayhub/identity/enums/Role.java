@@ -1,7 +1,7 @@
 package com.stayhub.identity.enums;
 
 public enum Role {
-  GUEST,
-  HOST,
-  ADMIN
+  ROLE_GUEST,
+  ROLE_HOST,
+  ROLE_ADMIN
 }
